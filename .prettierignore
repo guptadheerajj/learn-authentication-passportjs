@@ -1,0 +1,25 @@
+# Ignore artifacts:
+build
+coverage
+dist
+.nyc_output
+
+# Ignore dependencies:
+node_modules
+
+# Ignore generated files:
+*.min.js
+*.min.css
+
+# Ignore logs:
+*.log
+logs
+
+# Ignore lock files:
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore OS files:
+.DS_Store
+Thumbs.db

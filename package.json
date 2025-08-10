@@ -1,0 +1,43 @@
+{
+	"name": "express-template",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "node --watch app.js",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint-and-format": "npm run lint:fix && npm run format"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/guptadheerajj/express-template.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/guptadheerajj/express-template/issues"
+	},
+	"homepage": "https://github.com/guptadheerajj/express-template#readme",
+	"description": "",
+	"devDependencies": {
+		"@eslint/css": "^0.10.0",
+		"@eslint/js": "^9.32.0",
+		"@eslint/json": "^0.13.1",
+		"@eslint/markdown": "^7.1.0",
+		"dotenv": "^17.2.1",
+		"eslint": "^9.32.0",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^16.3.0",
+		"prettier": "3.6.2"
+	},
+	"dependencies": {
+		"ejs": "^3.1.10",
+		"express": "^5.1.0",
+		"express-validator": "^7.2.1",
+		"pg": "^8.16.3"
+	}
+}
