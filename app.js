@@ -25,35 +25,32 @@ app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-	res.render("index", { user: req.user });
-});
-
-app.get("/sign-up", (req, res) => res.render("sign-up-form"));
-
 passport.use(
-	new LocalStrategy(async (username, password, done) => {
+	new LocalStrategy(async function (username, password, done) {
 		try {
 			const { rows } = await pool.query(
 				"SELECT * FROM users WHERE username = $1",
 				[username],
 			);
-			console.log(rows);
 			const user = rows[0];
 
 			if (!user) {
-				return done(null, false, { message: "Incorrect username" });
+				return done(null, false, {
+					message: "Incorrect username or password",
+				});
 			}
 
-			const match = await bcrypt.compare(password, user.password);
-			if (!match) {
-				// passwords do not match!
-				return done(null, false, { message: "Incorrect password" });
+			const matchPassword = await bcrypt.compare(password, user.password);
+
+			if (!matchPassword) {
+				return done(null, false, {
+					message: "Incorrect username or password",
+				});
 			}
 
-			return done(null, user);
+			done(null, user);
 		} catch (err) {
-			return done(err);
+			done(err);
 		}
 	}),
 );
@@ -80,16 +77,33 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.get("/log-out", (req, res, next) => {
+	req.logOut(err => {
+		if (err) return next(err);
+
+		res.redirect("/");
+	});
+});
+
+app.get("/", (req, res) => {
+	res.render("index", { user: res.locals.currentUser });
+});
+
+app.get("/sign-up", (req, res) => {
+	res.render("sign-up-form");
+});
+
 app.post("/sign-up", async (req, res, next) => {
+	const { username, password } = req.body;
+	const hashedPassword = await bcrypt.hash(password, 10);
 	try {
-		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		await pool.query(
-			"INSERT INTO users (username, password) VALUES ($1, $2)",
-			[req.body.username, hashedPassword],
+			"INSERT INTO users (username, password) VALUES ($1, $2);",
+			[username, hashedPassword],
 		);
+		console.log(`User with username: ${username} stored successfully`);
 		res.redirect("/");
 	} catch (error) {
-		console.error(error);
 		next(error);
 	}
 });
@@ -101,15 +115,6 @@ app.post(
 		failureRedirect: "/",
 	}),
 );
-
-app.get("/log-out", (req, res, next) => {
-	req.logout(err => {
-		if (err) {
-			return next(err);
-		}
-		res.redirect("/");
-	});
-});
 
 app.listen(3000, error => {
 	if (error) {
